@@ -12,12 +12,12 @@ class NamespaceAutoloader implements AutoloaderInterface
 		//Ceci fonctionne seulement si les classes sont bien nommées.
 		$path = OZ_ROOT.DS.str_replace(NS, DS, $class).'.php';
 
-    	if(is_file($path))
-    	{
-        	require_once $path;
-        	//on s'arrete là si ça a marché.
-        	return true;
-    	}
+		if(is_file($path))
+		{
+			require_once $path;
+			//on s'arrete là si ça a marché.
+			return true;
+		}
 
     	//Si la première tentative échoue, on regarde si il ne s'agit pas d'un namespace spécial
     	//qu'on a enregistré nous même avec NamespaceAutoloader::registerNamespace().
