@@ -135,7 +135,7 @@ class Cache implements CacheInterface
 	protected function formatDatas($datas)
 	{
 		$formattedDatas  = '<?php'."\n";
-		$formattedDatas .= 'defined('OZ_APP_RUNING') or die('Forbidden Access');'."\n";
+		$formattedDatas .= 'defined(\'OZ_APP_RUNING\') or die(\'Forbidden Access\');'."\n";
 		$formattedDatas .= 'return \''.var_export($datas).'\';'; 
 
 		return $formattedDatas;
