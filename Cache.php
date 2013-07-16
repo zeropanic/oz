@@ -3,9 +3,9 @@
 /**
  * Class \Oz\Cache allows you to store or retrieve the content of a variable
  * or store the output of the buffer. It can store the same cache identifier
- * with differents lifetimes. An it can purge all cache, all entries for an
- * identifier (if one is specified) or only one special lifetime of the
- * identifier is both are supplied.
+ * with differents lifetimes. An it can purge all cache entries or all entries for a
+ * specific identifier (if one is specified) or only one specific lifetime of the
+ * identifier if both are supplied.
  * 
  * How-to example 1 (caching a variable):
  * Assuming $cache is an instance of \Oz\Cache.
