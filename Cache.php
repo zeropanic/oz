@@ -99,6 +99,10 @@ class Cache implements CacheInterface
 	public function __construct()
 	{
 		$this->cacheDir = Dic::getInstance()->getService('app')->getPath('cache');
+
+		if (!is_dir($this->cacheDir)) {
+			mkdir($this->cacheDir, 0777, true);
+		}
 	}
 
 	/**
@@ -123,6 +127,7 @@ class Cache implements CacheInterface
 		}
 
 		file_put_contents($filePath, $this->formatDatas($datas));
+
 	}
 
 	/**
@@ -134,9 +139,9 @@ class Cache implements CacheInterface
 	 */
 	protected function formatDatas($datas)
 	{
-		$formattedDatas  = '<?php'."\n";
-		$formattedDatas .= 'defined(\'OZ_APP_RUNING\') or die(\'Forbidden Access\');'."\n";
-		$formattedDatas .= 'return \''.var_export($datas).'\';'; 
+		$formattedDatas  = '<?php'."\n\n";
+		$formattedDatas .= 'defined(\'OZ_APP_RUNING\') or die(\'Forbidden Access\');'."\n\n";
+		$formattedDatas .= 'return \''.serialize($datas).'\';'; 
 
 		return $formattedDatas;
 	}
@@ -181,19 +186,20 @@ class Cache implements CacheInterface
 		$fileDir  = $this->buildFilePath($id);
 		$filePath = $fileDir.DS.md5($lifetime).'.php';
 
-		if (is_file($filePath)) {
+		if (!is_file($filePath)) {
 			throw new InvalidArgument('Impossible to find the file '.$filePath
 				.' associated to the identifier '.$id.' and the lifetime '.$lifetime);
 		}
 
-		return include $filePath;
+		$datas = include $filePath;
+		return unserialize($datas);
 	}
 
 	/**
 	 * isValid check whether a file is valid or not for the given path and lifetime
 	 * @access  protected
 	 * @param  string  $filePath path to the file to check
-	 * @param  int  	 $lifetime description
+	 * @param  int     $lifetime lifetime of the file to check
 	 * @return boolean           true if the file is valid, false if not
 	 */
 	protected function isValid($filePath, $lifetime)
@@ -211,8 +217,7 @@ class Cache implements CacheInterface
 	protected function buildFilePath($id)
 	{
 		$idMd5 = md5($id);
-		$idLength = round(strlen($id) / 2);
-
+		$idLength = round(strlen($idMd5) / 2);
 		$path = $this->cacheDir.DS.chunk_split($idMd5, $idLength, DS);
 
 		return rtrim($path, DS);
@@ -260,18 +265,24 @@ class Cache implements CacheInterface
 	protected function purgeDirectory($dir)
 	{
 		if (!is_dir($dir)) {
-			throw new InvalidArgument('Impossible to find specified direcotry '.$dir);
+			throw new InvalidArgument('Impossible to find specified directory '.$dir);
 		}
  
-		$iterator = new \RecursiveDirectoryIterator($dir,\FilesystemIterator::SKIP_DOTS);
-		 
-		foreach(new \RecursiveIteratorIterator($iterator) as $file) {
-			if (is_dir($file->getPathname())) {
-				rmdir($file->getPathname());
-			} else {
-				unlink($file->getPathname());
-			}
-		}
+	    $directoryIterator = new \RecursiveIteratorIterator(
+	        new \RecursiveDirectoryIterator($dir),
+	        \RecursiveIteratorIterator::CHILD_FIRST
+	    );
+
+	    foreach($directoryIterator as $file) {
+			if (in_array($file->getBasename(), array('.', '..'))) {
+	            continue;
+	        } elseif ($file->isDir()) {
+	            rmdir($file->getPathname());
+	        } elseif ($file->isFile() || $file->isLink()) {
+	            unlink($file->getPathname());
+	        }
+	    }
+	    rmdir($dir);
 	}
 
 	/**
