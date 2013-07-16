@@ -52,7 +52,7 @@
  * $cache->deleteCache('myIdentifier');
  * Or at least, you can specify a lifetime to preserve
  * all others entries for the supplied identifier like this:
- * $cache->delete('myIdentifier', $cache::ONE_WEEK);
+ * $cache->deleteCache('myIdentifier', $cache::ONE_WEEK);
  * 
  * @package  Cache
  * @author  zeropanic <zeropanic@myself.com>
