@@ -14,6 +14,7 @@ trait ArrayAccess
 {
     /**
      * offsetGet is a getter for offsets.
+     * @access  public
      * @param  [string] $offset the offset you want to get
      * @return [mixed]          the content of the offset
      */
@@ -24,6 +25,7 @@ trait ArrayAccess
 
     /**
      * offsetSet is a setter for offsets.
+     * @access  public
      * @param  string $offset      the offset you want to set
      * @param  mixed  $offsetValue the value of the offset
      * @return void
@@ -35,6 +37,7 @@ trait ArrayAccess
 
     /**
      * offsetExists check whether and offset exists or not.
+     * @access  public
      * @param  string $offset the offset you want to check
      * @return boolean        true if the offset exists, false if not
      */
@@ -45,6 +48,7 @@ trait ArrayAccess
     
     /**
      * offsetUnset allows you to unset an offset.
+     * @access  public
      * @param  string $offset the offset you want to unset
      * @return void
      */

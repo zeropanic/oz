@@ -25,6 +25,7 @@ trait ConfigReader
 	/**
 	 * $config will store the result of the parsing
 	 * @var \Oz\Ini
+	 * @access  protected
 	 */
 	protected $config;
 
@@ -33,6 +34,7 @@ trait ConfigReader
 	 * @param  string  $configFilePath path to the ini file
 	 * @param  boolean $absolutePath   true if $configFilePath is absolute
 	 *                                 false if not.
+	 * @access  protected
 	 * @throws \Oz\Exception\InvalidArgument If the file doesn't exists. 
 	 * @return \Oz\Ini 				   the ini instance of the parsed file
 	 */
@@ -56,6 +58,8 @@ trait ConfigReader
 	/**
 	 * setConfig is the setter of $config
 	 * @param \Oz\Ini $config Ini instance you want to set as config
+	 * @access  public
+	 * @return  void
 	 */
 	public function setConfig(Ini $config)
 	{
@@ -64,6 +68,7 @@ trait ConfigReader
 
 	/**
 	 * getConfig is the getter for $config
+	 * @access  public
 	 * @return \Oz\Ini the instance of the parsed config file
 	 */
 	public function getConfig()
