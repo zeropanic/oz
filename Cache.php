@@ -267,22 +267,22 @@ class Cache implements CacheInterface
 		if (!is_dir($dir)) {
 			throw new InvalidArgument('Impossible to find specified directory '.$dir);
 		}
- 
-	    $directoryIterator = new \RecursiveIteratorIterator(
-	        new \RecursiveDirectoryIterator($dir),
-	        \RecursiveIteratorIterator::CHILD_FIRST
-	    );
 
-	    foreach($directoryIterator as $file) {
+		$directoryIterator = new \RecursiveIteratorIterator(
+		    new \RecursiveDirectoryIterator($dir),
+		    \RecursiveIteratorIterator::CHILD_FIRST
+		);
+
+		foreach($directoryIterator as $file) {
 			if (in_array($file->getBasename(), array('.', '..'))) {
-	            continue;
-	        } elseif ($file->isDir()) {
-	            rmdir($file->getPathname());
-	        } elseif ($file->isFile() || $file->isLink()) {
-	            unlink($file->getPathname());
-	        }
-	    }
-	    rmdir($dir);
+		        continue;
+		    } elseif ($file->isDir()) {
+		        rmdir($file->getPathname());
+		    } elseif ($file->isFile() || $file->isLink()) {
+		        unlink($file->getPathname());
+		    }
+		}
+		rmdir($dir);
 	}
 
 	/**
