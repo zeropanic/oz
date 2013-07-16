@@ -68,7 +68,8 @@
 
 namespace Oz;
 
-use /* Static dependencies */
+use
+	/* Static dependencies */
 	\Oz\Di\Dic,
 	\Oz\Cache\CacheInterface,
 	/* Exceptions */

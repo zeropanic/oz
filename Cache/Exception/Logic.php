@@ -11,7 +11,9 @@
 
 namespace Oz\Cache\Exception;
 
-use \Oz\Cache\Exception;
+use
+	/* Exception */
+	\Oz\Cache\Exception;
 
 class Logic extends Exception
 {
