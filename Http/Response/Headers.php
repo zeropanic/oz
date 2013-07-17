@@ -24,7 +24,7 @@ namespace Oz\Http\Response;
 use
     /* Static dependencies */
     \Oz\Traits\ConfigReader,
-	\Oz\Http\Response\Headers\HeadersInterface,
+    \Oz\Http\Response\Headers\HeadersInterface,
     /* Exceptions */
     \Oz\Http\Response\Headers\Exception,
     \Oz\Http\Response\Headers\Exception\InvalidArgument;
@@ -34,14 +34,14 @@ class Headers implements HeadersInterface
     /**
      * @uses  \Oz\Traits\ConfigReader the trait for reading config files
      */
-	use ConfigReader;
+    use ConfigReader;
 
     /**
      * $headers is an array containing all defined headers.
      * @access  protected
      * @var array
      */
-	protected $headers = array();
+    protected $headers = array();
 
     /**
      * class constructor parse the config file and sets the default
@@ -50,16 +50,16 @@ class Headers implements HeadersInterface
      * @param string $configFilePath path to the config file
      * @return  void
      */
-	public function __construct($configFilePath)
-	{
-		$this->parseConfig($configFilePath);
+    public function __construct($configFilePath)
+    {
+    	$this->parseConfig($configFilePath);
 
         if (isset($this->config->headers->default) && $this->config->headers->default instanceof Ini) {
             foreach ($this->config->headers->default as $directive => $value) {
                 $this->setHeader($directive, $value);
             }
         }
-	}
+    }
 
     /**
      * setStatusCode allows you to set an Http Status code
@@ -94,19 +94,19 @@ class Headers implements HeadersInterface
      * @param boolean $replace  if specified,
      * @return  \Oz\Http\Response\Headers\HeadersInterface headers instance
      */
-	public function setHeader($directive, $value, $replace = null)
+    public function setHeader($directive, $value, $replace = null)
     {
     	if (is_null($replace) || $replace != static::DONT_REPLACE) {
     		$this->headers[$directive] = $value;
     	} elseif ($replace == static::DONT_REPLACE) {
 
-			if (!$this->hasHeader($directive)) {
-				$this->headers[$directive] = $value;
-			}
-			else {
-				return $this;
-			}
-		}
+    		if (!$this->hasHeader($directive)) {
+    			$this->headers[$directive] = $value;
+    		}
+    		else {
+    			return $this;
+    		}
+    	}
 
         return $this;
     }
@@ -206,7 +206,7 @@ class Headers implements HeadersInterface
         if ($directive === static::REMOVE_ALL) {
             $this->headers = array();
         } elseif (is_array($directive)) {
-  
+
             foreach($directive as $key) {
             	if ($this->hasHeader($key)) {
             		unset($this->headers[$key]);
