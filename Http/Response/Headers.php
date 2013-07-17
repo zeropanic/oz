@@ -177,7 +177,7 @@ class Headers implements HeadersInterface
      */
     public function getHeader($directive)
     {
-        return $this->hasHeader($directive) ? $this->headers[$directive] : false
+        return $this->hasHeader($directive) ? $this->headers[$directive] : false;
     }
 
     /**
