@@ -10,7 +10,7 @@
  * @namespace Oz
  * @implements \Oz\Dispatcher\DispatcherInterface
  * @uses  \Oz\Di\Dic our dependency injection container
- * @uses  \Oz\Traits\ConfigReader  our config reader trait
+ * @uses  \Oz\Traits\IniConfigReader  our config reader trait
  * @uses  \Oz\Router\RouterInterface interface for passing the router to
  *        the constructor (dependency injection)
  * @uses  \Oz\Http\Request\RequestInterface interface for passing the
@@ -26,7 +26,7 @@ namespace Oz;
 use
     /* Static dependencies */
     \Oz\Di\Dic,
-    \Oz\Traits\ConfigReader,
+    \Oz\Traits\IniConfigReader,
     \Oz\Router\RouterInterface,
     \Oz\HTTP\Request\RequestInterface,
     \Oz\Dispatcher\DispatcherInterface,
@@ -38,9 +38,9 @@ use
 class Dispatcher implements DispatcherInterface
 {
     /**
-     * @uses  \Oz\Traits\ConfigReader to read and parse ini files easily
+     * @uses  \Oz\Traits\IniConfigReader to read and parse ini files easily
      */
-    use ConfigReader;
+    use IniConfigReader;
 
     /**
      * $request will store the request instance
@@ -70,7 +70,7 @@ class Dispatcher implements DispatcherInterface
                                 RequestInterface  $request,
                                                   $configFilePath)
     {
-        $this->config   = $this->parseConfig($configFilePath);
+        $this->config   = $this->parseIniConfig($configFilePath);
         $this->router   = $router;
         $this->request  = $request;
     }
@@ -164,7 +164,7 @@ class Dispatcher implements DispatcherInterface
         }
 
         try {
-            Dic::getInstance()->getService('frontcontroller')->startMvc();
+            //Dic::getInstance()->getService('frontcontroller')->startMvc();
         } catch (\Oz\Exception $e) {
             $e->printOrReport();
         }

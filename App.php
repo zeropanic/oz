@@ -10,8 +10,9 @@
  * @namespace Oz
  * @implements \Oz\App\AppInterface
  * @uses  \Oz\Di\Dic our dependency injection container
+ * @uses  \Oz\Config\Ini the ini file reader class
  * @uses  \Oz\App\AppInterface the interface we got to implements
- * @uses  \Oz\Traits\ConfigReader the trait to read config files easily
+ * @uses  \Oz\Traits\IniConfigReader the trait to read ini config files easily
  * @uses  \Oz\Exception as OzException main Exception class of the framework
  *        useful to catch all exceptions thrown by the framework
  * @uses  \Oz\App\Exception the App package Exception class.
@@ -24,8 +25,9 @@ namespace Oz;
 use
     /* Static dependencies */
     \Oz\Di\Dic,
+    \Oz\Config\Ini,
     \Oz\App\AppInterface,
-    \Oz\Traits\ConfigReader,
+    \Oz\Traits\IniConfigReader,
     /* Exceptions */
     \Oz\Exception as OzException,
     \Oz\App\Exception,
@@ -37,7 +39,7 @@ class App implements AppInterface
     /**
      * @uses  \Oz\Traits\ConfigReader the trait for reading config files.
      */
-    use ConfigReader;
+    use IniConfigReader;
 
     /**
      * $paths store all paths for the application such as cache, kernel etc.
@@ -53,7 +55,7 @@ class App implements AppInterface
      */
     public function __construct($configPath)
     {
-        $this->config = $this->parseConfig($configPath);
+        $this->setIniConfig($this->parseIniConfig($configPath));
         $this->hydrate();
     }
 
@@ -64,7 +66,7 @@ class App implements AppInterface
      */
     protected function hydrate()
     {
-        $config = $this->getConfig();
+        $config = $this->getIniConfig();
 
         if (isset($config->app->path) && $config->app->path instanceof Ini) {
             foreach ($config->app->path as $key => $value){
@@ -84,7 +86,7 @@ class App implements AppInterface
     /**
      * init the application
      * @access  public
-     * @return \Oz\App instance of the class for chaining with run method
+     * @return \Oz\App\AppInterface instance of the class for chaining with run method
      */
     public function init()
     {

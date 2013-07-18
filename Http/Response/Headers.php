@@ -10,7 +10,7 @@
  * @version  1.0
  * @namespace Oz\Http\Response
  * @implements \Oz\Http\Response\Headers\HeadersInterface
- * @uses  \Oz\Traits\ConfigReader the ini config file reader
+ * @uses  \Oz\Traits\IniConfigReader the ini config file reader
  * @uses  \Oz\Http\Response\Headers\HeadersInterface the interface to
  *        implements to build a correct Headers class.
  * @uses  \Oz\Http\Response\Headers\Exception the main exception class of
@@ -23,7 +23,8 @@ namespace Oz\Http\Response;
 
 use
     /* Static dependencies */
-    \Oz\Traits\ConfigReader,
+    \Oz\Config\Ini,
+    \Oz\Traits\IniConfigReader,
     \Oz\Http\Response\Headers\HeadersInterface,
     /* Exceptions */
     \Oz\Http\Response\Headers\Exception,
@@ -34,7 +35,7 @@ class Headers implements HeadersInterface
     /**
      * @uses  \Oz\Traits\ConfigReader the trait for reading config files
      */
-    use ConfigReader;
+    use IniConfigReader;
 
     /**
      * $headers is an array containing all defined headers.
@@ -52,7 +53,7 @@ class Headers implements HeadersInterface
      */
     public function __construct($configFilePath)
     {
-    	$this->parseConfig($configFilePath);
+    	$this->setIniConfig($this->parseIniConfig($configFilePath));
 
         if (isset($this->config->headers->default) && $this->config->headers->default instanceof Ini) {
             foreach ($this->config->headers->default as $directive => $value) {
