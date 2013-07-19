@@ -28,44 +28,57 @@ class Config implements \ArrayAccess
 	/**
 	 * class constructor can be used to parse an array with or without
 	 * options with both are specified. It can also do nothing, useful
-	 * if you want to populate the object with populateFromArray
-	 * method which use new self() to make a 100% \Oz\Config object.
+	 * if you want to populate the object with populateFromArraybmethod.
 	 * @access public
-	 * @param mixed  $config       optional: the array you want to parse
-	 * @param array  $options optional: the options for parsing
-	 *                             options are indexes and only 2 are
-	 *                             availables for array config files:
-	 *                             'process.sections' (bool) and 'section'
-	 *                             (string) name of the section to process
+	 * @param mixed  $config  optional: the array you want to parse
+	 * @param array  $options optional: the options for parsing options
+     *                        are indexes and only 4 are availables for
+     *                        array config files: 'process.sections' (bool)
+     *                        'section' (string) name of the section to
+     *                        process, 'process.nesting' (bool) to process
+     *                        a nesting recursively, 'nesting.separator'
+     *                        to use a custom separator during nesting.                             
 	 * @return  void
 	 */
 	public function __construct($config = null, array $options = array())
 	{
 		if (!is_null($config) && is_array($config)) {
 
+            if (isset($options['process.sections'])
+                && $options['process.sections'] === true) {
+                $config = $this->processSections($config);
+
+                $section = isset($options['section']) ?
+                    $options['section'] : OZ_APP_ENV;
+
+                if (isset($config[$section])) {
+                    $config = $config[$section];
+                }   
+            }
+
 			if (isset($options['process.nesting'])
 				&& $options['process.nesting'] === true) {
 
-				$separator = isset($options['nesting.separator'])
-					? $options['nesting.separator'] : '.'; 
+				$separator = isset($options['nesting.separator']) ?
+					$options['nesting.separator'] : '.'; 
 
-				$config = $this->recursiveNesting($config, $separator);
+				$config = $this->processRecursiveNesting($config, $separator);
 			}
 
-			$this->populateFromArray($config, $this);
-
+            var_dump($config); exit;
+            $this->populateFromArray($config, $this);
 		}
 	}
 
 	/**
-	 * recursiveNesting allows you to process nesting in an array in a
+	 * processRecursiveNesting allows you to process nesting in an array in a
 	 * recursive way.
 	 * @access  protected
 	 * @param  array  $array     the array you want to process nesting
 	 * @param  string $separator the separator for proccessing nesting
 	 * @return array             the final array after nested all nodes
 	 */
-	protected function recursiveNesting(array $array, $separator)
+	protected function processRecursiveNesting(array $array, $separator)
 	{
 		$returnArray = array();
 
@@ -73,7 +86,7 @@ class Config implements \ArrayAccess
 
         	foreach ($array as $key => $value) {
             	if (is_array($value)) {
-                	$array[$key] = $this->recursiveNesting($value, $separator);
+                	$array[$key] = $this->processRecursiveNesting($value, $separator);
             	}
 
             	$x = explode($separator, $key);
@@ -106,6 +119,52 @@ class Config implements \ArrayAccess
     }
 
     /**
+     * processSections map the array and fetch defined sections, it can
+     * also set a 'section heritance' by using sections such as [dev : prod]
+     * whereas dev will herit datas from prod and will override all
+     * settings if they already are in prod.
+     * @param  array  $array [description]
+     * @return [type]        [description]
+     */
+    protected function processSections(array $array)
+    {
+        $returnArray = array();
+
+        foreach ($array as $key => $value) {
+            $sections = explode(':', $key);
+
+            if (!empty($sections[1])) {
+                $sectionsArray = array();
+                
+                foreach ($sections as $sectionKey => $sectionValue) {
+                    $sectionsArray[$sectionKey] = trim($sectionValue);
+                }
+                
+                $sectionsArray = array_reverse($sectionsArray, true);
+                
+                foreach ($sectionsArray as $k => $v) {
+                    $c = $sectionsArray[0];
+                    
+                    if (empty($returnArray[$c])) {
+                        $returnArray[$c] = array();
+                    }
+                    if (isset($returnArray[$sectionsArray[1]])){
+                        $returnArray[$c] = array_merge($returnArray[$c], $returnArray[$sectionsArray[1]]);
+                    }
+                    if ($k === 0){
+                        $returnArray[$c] = array_merge($returnArray[$c], $array[$key]);
+                    }
+                }
+            } else {
+                $returnArray[$key] = $array[$key];
+            }
+        }
+
+
+        return $returnArray;
+    }
+
+    /**
      * populateFromArray recursively populate the object passed as 
      * second parameter with the array passed as first parameter
      * it creates object from an array node instancing the class 
@@ -125,7 +184,6 @@ class Config implements \ArrayAccess
             	$object->{$key} = $value;
             }
         }
-
     }
 
 }

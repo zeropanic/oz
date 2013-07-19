@@ -64,76 +64,16 @@ class Ini extends Config
 			if (isset($options['process.sections'])
 				&& $options['process.sections'] === true)
 			{
-				$iniArray = $this->parseSections(parse_ini_file($iniFilePath, true));
-
-				if (isset($options['section'])
-					&& isset($iniArray[$options['section']])) {
-					$iniArray = $iniArray[$options['section']];
-
-				}
+				$iniArray = parse_ini_file($iniFilePath, true);
 
 			} else {
 				$iniArray = parse_ini_file($iniFilePath);
 			}
 
-			if (isset($options['process.nesting'])
-				&& is_bool($options['process.nesting'])) {
-
-				$separator = isset($options['nesting.separator'])
-					? $options['nesting.separator'] : '.';
-
-				$iniArray = $this->recursiveNesting($iniArray, $separator);
-			}
-
-			parent::populateFromArray($iniArray, $this);
+			parent::__construct($iniArray, $options);
 		}
 	}
 
-	/**
-	 * parseSections map the array and fetch defined sections, it can
-	 * also set a 'section heritance' by using sections such as [dev : prod]
-	 * whereas dev will herit datas from prod and will override all
-	 * settings if they already are in prod.
-	 * @param  array  $array [description]
-	 * @return [type]        [description]
-	 */
-	protected function parseSections(array $array)
-	{
-		$returnArray = array();
-
-    	foreach ($array as $key => $value) {
-        	$sections = explode(':', $key);
-
-        	if (!empty($sections[1])) {
-            	$sectionsArray = array();
-            	
-            	foreach ($sections as $sectionKey => $sectionValue) {
-                	$sectionsArray[$sectionKey] = trim($sectionValue);
-            	}
-            	
-            	$sectionsArray = array_reverse($sectionsArray, true);
-            	
-            	foreach ($sectionsArray as $k => $v) {
-                	$c = $sectionsArray[0];
-                	
-                	if (empty($returnArray[$c])) {
-                    	$returnArray[$c] = array();
-                	}
-                	if (isset($returnArray[$sectionsArray[1]])){
-                    	$returnArray[$c] = array_merge($returnArray[$c], $returnArray[$sectionsArray[1]]);
-                	}
-                	if ($k === 0){
-                    	$returnArray[$c] = array_merge($returnArray[$c], $array[$key]);
-                	}
-            	}
-        	} else {
-            	$returnArray[$key] = $array[$key];
-        	}
-    	}
-
-
-    	return $returnArray;
-	}
 }
 
 ?>
